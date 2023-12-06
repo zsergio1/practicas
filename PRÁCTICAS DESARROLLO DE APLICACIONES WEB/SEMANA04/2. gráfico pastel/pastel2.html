@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de Pastel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden; 
+        }
+
+        header {
+            background-color: #000000;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+        }
+        footer {
+            background-color: #000000;
+            color: #0f0e0e;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .contenedor {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 60px); 
+        }
+
+        canvas {
+            background-color: #fff;
+            border-radius: 50%; 
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            max-width: 100%; /* canvas responsivo */
+        }
+
+    </style>
+</head>
+<body>
+    
+    <header>
+        <h1>Gráfico de Pastel</h1>
+    </header>
+
+    <section class="contenedor">
+        <canvas id="pastel" width="500" height="500"></canvas>
+    </section>
+    <script>
+        const canvas = document.getElementById('pastel');
+        const context = canvas.getContext('2d');
+
+        const colors = ['#33FF52', '#33F3FF', '#FFA533', '#33aaff'];
+        const data = [10, 20, 30, 40];
+        const etiquetas = ['Porcion 1', 'porcion 2', 'porcion 3', 'porcion']; 
+        const total = data.reduce((acc, val) => acc + val, 0);
+        const radius = Math.min(canvas.width, canvas.height) / 2; /* tamano del pastel */
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        let startAngle = -Math.PI / 2;
+        let rotationSpeed = 0.003; // Velocidad de rotación
+
+        function animatePieChart() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < data.length; i++) {
+                const sliceAngle = (Math.PI * 2 * data[i]) / total;
+
+                // Calcula el ángulo medio del segmento
+                const segmentAngle = startAngle + sliceAngle / 2;
+
+                // Calcula las coordenadas para la etiqueta
+                const labelX = centerX + Math.cos(segmentAngle) * (radius * 0.7); // 0.7 para ajustar la distancia
+                const labelY = centerY + Math.sin(segmentAngle) * (radius * 0.7); // 0.7 para ajustar la distancia
+
+                // Dibuja el segmento del pastel
+                context.beginPath();
+                context.moveTo(centerX, centerY);
+                context.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                context.fillStyle = colors[i];
+                context.fill();
+
+                // Dibuja la etiqueta de porcentaje encima del pastel
+                context.fillStyle = '#555';
+                context.font = `${Math.min(canvas.width, canvas.height) * 0.03}px Arial`; // Tamaño de fuente responsivo
+                context.textAlign = 'center';
+                context.fillText(`${data[i]}%`, labelX, labelY);
+
+                // Dibuja la etiqueta del nombre de la porción
+                context.font = `${Math.min(canvas.width, canvas.height) * 0.03}px Arial`; // Tamaño de fuente responsivo
+                context.fillText(etiquetas[i], labelX, labelY + (Math.min(canvas.width, canvas.height) * 0.03)); // Ajustar la posición vertical de la etiqueta
+
+                //  bordes a las porciones
+                context.strokeStyle = 'white'; 
+                context.lineWidth = 4; // Ancho del borde
+                context.stroke();
+
+                startAngle += sliceAngle;
+            }
+
+            startAngle += rotationSpeed;
+s
+            requestAnimationFrame(animatePieChart);
+        }
+
+        animatePieChart(); // Iniciar la animación
+    </script>
+</body>
+
+</html>
